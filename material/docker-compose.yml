@@ -1,0 +1,56 @@
+# docker-compose -f data-playground.yml up -d
+version: "3.4"
+services:
+
+  adventure-works-db:
+  # docker-hub build
+    image: stvansolano/adventure-works:latest
+    environment:
+      SA_PASSWORD: "Password.123"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+    
+  dotnet-web-api:
+  # docker build local
+    build: 
+      dockerfile: DotNetWebApi/Dockerfile
+      context: .
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_URLS=http://+:80
+      - ASPNETCORE_ENVIRONMENT=Production
+      - Configuration_ConnectionStrings_ToDoDatabase=data source=adventure-works-db,1433;initial catalog=ToDosDb;persist security info=True;user id=sa;password=Password.123;MultipleActiveResultSets=True;
+    depends_on: 
+      - adventure-works-db
+    links:
+      - adventure-works-db
+
+#  dotnet-wasm-frontend:
+#    build: 
+#      dockerfile: DotNetWebAssembly/Dockerfile
+#      context: .
+#    ports:
+#      - "80:80"
+#    environment: 
+#      - ASPNETCORE_URLS=http://+:80
+#      - ASPNETCORE_ENVIRONMENT=Development
+#      - Configuration_Backend=http://dotnet-web-api
+
+##  redis:
+##    image: redis:4.0.8-alpine
+##    ports:
+##        published: 6379
+##        mode: ingress
+##    volumes:
+##      - "~/data/${STACK_NAME}/redis:/data"
+
+#  code-server:
+#    image: stvansolano/code-server:latest
+#    ports:
+#      - "8080:8080"
+#      - "8443:8443"
+#
+#    volumes:
+#      - "$PWD/:/home/playground"
