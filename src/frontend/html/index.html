@@ -1,0 +1,24 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title></title>
+</head>
+<body>
+    <h1>Hello!</h1>
+    <p id="hello"></p>
+    <script>
+        fetch("https://localhost:5001/hello",
+            {
+                method: "GET",
+                headers: {
+                    Accept: 'application/json',
+                }
+            })
+            .then(async response => {
+                var responseText = await response.json();
+                console.log(responseText);
+                document.getElementById('hello').innerHTML = responseText;
+            }); 
+    </script>
+</body>
+</html>
